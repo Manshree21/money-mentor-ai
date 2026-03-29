@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Money Mentor | Personal Financial Assistant</title>
+    <!-- Google Fonts: Outfit for a modern, fintech look -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for Visual Growth Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-brown: #3E2723;
+            --secondary-brown: #5D4037;
+            --accent-rose: #FF8A80;
+            --accent-gold: #FFD54F;
+            --beige-dark: #D7CCC8;
+            --beige-light: #EFEBE9;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --white: #FFFFFF;
+            --text-main: #2D1B18;
+            --text-muted: #6D4C41;
+            --success: #66BB6A;
+            --warning: #FFA726;
+            --danger: #EF5350;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* --- MODERN GLASSMORPHISM --- */
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+            border-color: var(--accent-rose);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: 0.6s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-brown);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--secondary-brown);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid var(--beige-dark);
+            background: var(--beige-light);
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--pastel-pink);
+            background: var(--white);
+        }
+
+        .btn {
+            background: var(--primary-brown);
+            color: var(--white);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: var(--secondary-brown);
+            transform: scale(1.02);
+        }
+
+        .btn-pink {
+            background: var(--pastel-pink);
+            color: var(--primary-brown);
+        }
+
+        .btn-pink:hover {
+            background: var(--pink-accent);
+        }
+
+        /* --- SECTIONS --- */
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .profile-trigger {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--primary-brown);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            z-index: 1500;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-trigger:hover {
+            background: var(--secondary-brown);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-brown);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--secondary-brown);
+            font-weight: 400;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .results-panel {
+            background: var(--primary-brown);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .results-panel .card-title {
+            color: var(--pastel-pink);
+            justify-content: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .health-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .health-excellent { background: var(--success); color: #fff; }
+        .health-good { background: var(--warning); color: #fff; }
+        .health-poor { background: var(--danger); color: #fff; }
+
+        .alerts-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-item {
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--white);
+        }
+
+        .educator-section {
+            background: var(--beige-light);
+            border: 2px dashed var(--pastel-pink);
+        }
+
+        .educator-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 30px;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-brown);
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            background: var(--beige-light);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid var(--beige-dark);
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* --- CHATBOT --- */
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            max-width: calc(100vw - 60px);
+            z-index: 1000;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-brown);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transition: var(--transition);
+        }
+
+        .chat-box {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            height: 450px;
+            overflow: hidden;
+            border: 1px solid var(--beige-dark);
+            margin-bottom: 75px;
+        }
+
+        .chat-header {
+            background: var(--primary-brown);
+            color: var(--white);
+            padding: 20px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-status {
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #faf9f8;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .msg-bot {
+            align-self: flex-start;
+            background: var(--beige-dark);
+            color: var(--text-main);
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-user {
+            align-self: flex-end;
+            background: var(--pastel-pink);
+            color: var(--primary-brown);
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            border-top: 1px solid var(--beige-dark);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- NEW SUITE STYLES --- */
+        .suite-label {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-brown);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .suite-label::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--beige-dark), transparent);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .btn-sm.active {
+            background: var(--accent-rose);
+            color: white;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--beige-dark);
+            border-radius: 5px;
+            outline: none;
+            margin: 15px 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-brown);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- ANIMATIONS --- */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        section {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        #tracker-suite { animation-delay: 0.2s; }
+        #advisor-suite { animation-delay: 0.4s; }
+        #planner-suite { animation-delay: 0.6s; }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 600px) {
+            body { padding: 20px 10px; }
+            header h1 { font-size: 1.8rem; }
+            .sidebar { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Personalized Side Window (Profile & History) -->
+<div class="sidebar" id="profile-sidebar" style="width: 450px; right: -450px;">
+    <div class="sidebar-header">
+        <h2 class="sidebar-title">Financial Dashboard</h2>
+        <span style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted);" onclick="toggleProfile()">✕</span>
+    </div>
+
+    <!-- 1. Basic Info & Settings -->
+    <div class="input-group">
+        <label for="user-name">Your Name</label>
+        <input type="text" id="user-name" placeholder="Finance Master" onchange="saveProfile()">
+    </div>
+
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+        <div class="input-group" style="margin-bottom: 0;">
+            <label for="target-rate">Savings Target (%)</label>
+            <input type="number" id="target-rate" value="20" onchange="saveProfile()">
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+            <label for="gemini-key">Gemini Key (AI)</label>
+            <input type="password" id="gemini-key" placeholder="API Key" onchange="saveApiKey()">
+        </div>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid var(--beige-dark); margin: 20px 0;">
+
+    <!-- 2. Goal Management -->
+    <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 10px;">🎯 Active Goals</h3>
+    <div class="input-group" style="display: flex; gap: 10px;">
+        <input type="text" id="new-goal-text" placeholder="e.g. Europe Trip" style="flex: 1;">
+        <button class="btn" style="width: auto; padding: 10px 15px;" onclick="addGoal()">Add</button>
+    </div>
+    <div id="goal-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-height: 150px; overflow-y: auto;">
+        <!-- Goals populated by JS -->
+    </div>
+
+    <hr style="border: none; border-top: 1px solid var(--beige-dark); margin: 20px 0;">
+
+    <!-- 3. AI Mentorship Corner -->
+    <div class="card" style="background: var(--beige-light); border: 2px solid var(--pastel-pink); padding: 15px;">
+        <h3 class="card-title" style="font-size: 1rem; margin-bottom: 10px;">🎓 AI Mentor Corner</h3>
+        <div id="mentorship-advice" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">
+            Providing analysis of your financial journey...
+        </div>
+        <button class="btn btn-pink" style="margin-top: 10px; padding: 8px; font-size: 0.8rem;" onclick="getMentorship()">Refresh Advice</button>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid var(--beige-dark); margin: 20px 0;">
+
+    <!-- 4. History -->
+    <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 10px;">🕰️ History</h3>
+    <div class="history-list" id="history-list" style="flex: 1;">
+        <p style="text-align: center; color: var(--text-muted);">No history yet.</p>
+    </div>
+    
+    <div style="display: flex; gap: 10px; margin-top:20px;">
+        <button class="btn" style="background: var(--secondary-brown);" onclick="toggleProfile()">Close</button>
+        <button class="btn" style="background: var(--danger);" onclick="clearHistory()">Clear Data</button>
+    </div>
+</div>
+
+<div class="container animate-fade">
+    <header>
+        <h1 style="background: linear-gradient(to right, var(--primary-brown), var(--accent-rose)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 3.5rem;">Money Mentor Pro</h1>
+        <p style="font-size: 1.1rem; letter-spacing: 1px; color: var(--text-muted);">Elite Financial Guidance & Growth Strategist</p>
+        <div class="profile-trigger" id="profile-btn" onclick="toggleProfile()">
+            <span style="font-size: 1.2rem;">✨</span> <span id="profile-name">My Wealth Profile</span>
+        </div>
+    </header>
+
+    <!-- SECTION 1: WEALTH TRACKER -->
+    <section id="tracker-suite">
+        <h2 class="suite-label">📊 Wealth Tracker</h2>
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">💰 Cash Flow</div>
+                <div class="input-group">
+                    <label for="income">Monthly Income ($)</label>
+                    <input type="number" id="income" placeholder="5000" oninput="analyzeFinance()">
+                </div>
+                <div class="input-group">
+                    <label for="expenses">Monthly Expenses ($)</label>
+                    <input type="number" id="expenses" placeholder="3000" oninput="analyzeFinance()">
+                </div>
+                <button class="btn btn-primary" onclick="analyzeFinance()">Update Analysis</button>
+            </div>
+
+            <div class="card results-panel" style="background: var(--primary-brown); color: var(--white); border: none;">
+                <div class="card-title" style="color: var(--accent-gold);">✨ Live Insights</div>
+                <p style="opacity: 0.8;">Monthly Savings Surplus</p>
+                <div class="stat-value" id="savings-display" style="font-size: 3.5rem; text-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.5s ease;">$0</div>
+                <div id="health-badge" class="health-badge health-good">Initializing...</div>
+                
+                <div class="alerts-container" id="alerts-list">
+                    <!-- Alerts will appear here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: GROWTH ADVISOR -->
+    <section id="advisor-suite">
+        <h2 class="suite-label">🚀 Growth Advisor</h2>
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-title">🛡️ Risk Assessment</div>
+                <p style="font-size: 0.9rem; margin-bottom: 20px; color: var(--text-muted);">Determine your investment appetite to unlock growth strategies.</p>
+                <div class="quiz-options" style="display: flex; flex-direction: column; gap: 10px;">
+                    <label class="quiz-option">
+                        <input type="radio" name="risk" value="conservative" onchange="updateAdvisor()"> 🐢 Conservative (Safety First)
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="risk" value="moderate" checked onchange="updateAdvisor()"> ⚖️ Moderate (Balanced Growth)
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="risk" value="aggressive" onchange="updateAdvisor()"> 🦁 Aggressive (Max Wealth)
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Growth Strategy</div>
+                <div id="advisor-recommendation" style="font-size: 1rem; line-height: 1.6;">
+                    <p style="color: var(--text-muted);">Complete your Cash Flow and Risk Assessment to view your personalized portfolio growth plan.</p>
+                </div>
+                <div id="portfolio-tags" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <!-- Recommendation tags -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: FUTURE PLANNER -->
+    <section id="planner-suite">
+        <h2 class="suite-label">🌅 Future Planner</h2>
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1.5fr;">
+            <div class="card">
+                <div class="card-title">🏖️ Retirement Simulator</div>
+                
+                <div class="planner-modes" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button id="mode-401k" class="btn btn-sm active" onclick="setPlannerMode('401k')">401k / Standard</button>
+                    <button id="mode-fire" class="btn btn-sm" onclick="setPlannerMode('fire')">FIRE Mode</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Current Savings ($): <span id="val-savings">50000</span></label>
+                    <input type="range" id="sim-savings" min="0" max="1000000" step="5000" value="50000" oninput="updateSim()">
+                </div>
+                <div class="input-group">
+                    <label>Monthly Contribution ($): <span id="val-contribution">1000</span></label>
+                    <input type="range" id="sim-contribution" min="0" max="10000" step="100" value="1000" oninput="updateSim()">
+                </div>
+                <div class="input-group">
+                    <label>Retirement Age: <span id="val-age">60</span></label>
+                    <input type="range" id="sim-age" min="30" max="80" step="1" value="60" oninput="updateSim()">
+                </div>
+                <div class="input-group" id="fire-target-group" style="display: none;">
+                    <label>FIRE Target Multiplier: <span id="val-multiplier">25</span>x</label>
+                    <input type="range" id="sim-multiplier" min="20" max="33" step="1" value="25" oninput="updateSim()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📉 Wealth Projections</div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="growthChart"></canvas>
+                </div>
+                <div id="retirement-summary" style="margin-top: 20px; font-weight: 600; text-align: center; color: var(--primary-brown);">
+                    <!-- Summary generated by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Logic Educator (Moved to a subtle banner) -->
+    <div class="card" style="padding: 20px; border-left: 5px solid var(--accent-rose); background: rgba(255, 138, 128, 0.05);">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-size: 2rem;">💡</span>
+            <div id="educator-text" style="font-size: 0.95rem; color: var(--text-muted);">
+                Pro Tip: The 50/30/20 rule suggests 20% should go toward growth and debt repayment.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 6. Chatbot Interface -->
+<div class="chatbot-container">
+    <div class="chat-box" id="chat-box">
+        <div class="chat-header">
+            <span>Money Mentor Bot <span id="ai-mode-tag" class="ai-status">Simulation</span></span>
+            <span style="cursor: pointer;" onclick="toggleChat()">✕</span>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message msg-bot">Hi there! I'm your AI Money Mentor. How can I help you today? You can ask about "save", "invest", or "debt".</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-input" style="flex: 1; padding: 10px; border: 1px solid var(--beige-dark);" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button class="btn" onclick="sendMessage()" style="width: auto; padding: 10px 15px;">Send</button>
+        </div>
+    </div>
+    <div class="chat-toggle" onclick="toggleChat()">
+        💬
+    </div>
+</div>
+
+<script>
+    // --- APP STATE & INITIALIZATION ---
+    let userHistory = JSON.parse(localStorage.getItem('mm_history')) || [];
+    let apiKey = localStorage.getItem('mm_api_key') || "";
+    let userProfile = JSON.parse(localStorage.getItem('mm_profile')) || {
+        name: "Finance Master",
+        targetRate: 20,
+        goals: []
+    };
+    let growthChart = null;
+    let plannerMode = '401k';
+
+    window.onload = () => {
+        // Load Profile
+        document.getElementById('user-name').value = userProfile.name;
+        document.getElementById('target-rate').value = userProfile.targetRate;
+        document.getElementById('gemini-key').value = apiKey;
+        
+        updateAiModeTag();
+        renderHistory();
+        renderGoals();
+        updateProfileDisplay();
+        initGrowthChart();
+        updateSim();
+        updateAdvisor();
+    };
+
+    function saveProfile() {
+        userProfile.name = document.getElementById('user-name').value;
+        userProfile.targetRate = parseFloat(document.getElementById('target-rate').value) || 20;
+        localStorage.setItem('mm_profile', JSON.stringify(userProfile));
+        updateProfileDisplay();
+    }
+
+    function updateProfileDisplay() {
+        const nameEl = document.getElementById('profile-name');
+        if (nameEl) nameEl.innerText = userProfile.name || "My Profile";
+    }
+
+    function toggleProfile() {
+        document.getElementById('profile-sidebar').classList.toggle('active');
+    }
+
+    function saveApiKey() {
+        apiKey = document.getElementById('gemini-key').value;
+        localStorage.setItem('mm_api_key', apiKey);
+        updateAiModeTag();
+    }
+
+    function updateAiModeTag() {
+        const tag = document.getElementById('ai-mode-tag');
+        if (tag) {
+            tag.innerText = apiKey ? "Gemini 1.5 Flash Active" : "Simulation";
+            tag.style.background = apiKey ? "var(--success)" : "rgba(255,255,255,0.2)";
+        }
+    }
+
+    // --- GOAL MANAGEMENT ---
+
+    function addGoal() {
+        const input = document.getElementById('new-goal-text');
+        const text = input.value.trim();
+        if (!text) return;
+
+        userProfile.goals.push({ id: Date.now(), text: text, completed: false });
+        input.value = '';
+        saveProfile();
+        renderGoals();
+    }
+
+    function removeGoal(id) {
+        userProfile.goals = userProfile.goals.filter(g => g.id !== id);
+        saveProfile();
+        renderGoals();
+    }
+
+    function renderGoals() {
+        const list = document.getElementById('goal-list');
+        if (!list) return;
+        if (userProfile.goals.length === 0) {
+            list.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">No active goals.</p>`;
+            return;
+        }
+
+        list.innerHTML = userProfile.goals.map(g => `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--beige-light); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem;">
+                <span>${g.text}</span>
+                <span style="color: var(--danger); cursor: pointer; font-weight: bold;" onclick="removeGoal(${g.id})">✕</span>
+            </div>
+        `).join('');
+    }
+
+    // --- FINANCIAL CORE ---
+
+    function analyzeFinance() {
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const savings = income - expenses;
+
+        if (income === 0 && expenses === 0) return;
+
+        // Update UI
+        const savingsEl = document.getElementById('savings-display');
+        savingsEl.innerText = `$${savings.toLocaleString()}`;
+        
+        const badge = document.getElementById('health-badge');
+        const ratio = income > 0 ? (savings / income) : 0;
+        const targetDecimal = userProfile.targetRate / 100;
+
+        let statusText = "Ready to Start";
+        if (savings < 0) {
+            statusText = "Poor Health 🔴";
+            badge.className = "health-badge health-poor";
+        } else if (ratio < targetDecimal) {
+            statusText = "Good Health 🟡";
+            badge.className = "health-badge health-good";
+        } else {
+            statusText = "Excellent Health 🟢";
+            badge.className = "health-badge health-excellent";
+        }
+        badge.innerText = statusText;
+
+        updateEducatorAndAlerts(income, expenses, savings, ratio, targetDecimal);
+        
+        // SAVE TO PERSISTENT HISTORY
+        saveToHistory(income, expenses, savings, statusText);
+        updateAdvisor();
+        updateSim();
+    }
+
+    function saveToHistory(income, expenses, savings, status) {
+        const entry = {
+            date: new Date().toLocaleString(),
+            income,
+            expenses,
+            savings,
+            status
+        };
+        userHistory.unshift(entry);
+        if (userHistory.length > 10) userHistory.pop(); // Keep last 10
+        localStorage.setItem('mm_history', JSON.stringify(userHistory));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('history-list');
+        if (!list) return;
+        if (userHistory.length === 0) {
+            list.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No history yet. Start analyzing!</p>`;
+            return;
+        }
+
+        list.innerHTML = userHistory.map(h => `
+            <div class="history-item">
+                <div class="history-date">${h.date}</div>
+                <div class="history-stats">
+                    <span>Inc: $${h.income}</span>
+                    <span>Exp: $${h.expenses}</span>
+                    <span>Sav: $${h.savings}</span>
+                    <span style="color: var(--primary-brown)">${h.status}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function clearHistory() {
+        if (confirm("Clear all your financial history and profile settings?")) {
+            userHistory = [];
+            userProfile = { name: "Finance Master", targetRate: 20, goals: [] };
+            localStorage.removeItem('mm_history');
+            localStorage.removeItem('mm_profile');
+            location.reload();
+        }
+    }
+
+    function updateEducatorAndAlerts(income, expenses, savings, ratio, targetDecimal) {
+        const educator = document.getElementById('educator-text');
+        const alertList = document.getElementById('alerts-list');
+        alertList.innerHTML = '';
+
+        let logicMsg = `Savings rate: <strong>${Math.round(ratio * 100)}%</strong> (Target: ${userProfile.targetRate}%). `;
+        if (ratio < 0) {
+            logicMsg += "Priority: Emergency debt reduction and expense cutting.";
+        } else if (ratio < targetDecimal) {
+            logicMsg += `You are below your ${userProfile.targetRate}% target. Review your non-essential spending.`;
+        } else {
+            logicMsg += "Great job! You are exceeding your target. Consider investing the surplus.";
+        }
+        educator.innerHTML = logicMsg;
+
+        if (expenses > (income * (1 - targetDecimal))) addAlert("Expense ratio exceeds target safety limits.");
+        if (savings < 0) addAlert("Critical: Spending exceeds income.");
+        if (ratio >= targetDecimal) addAlert("Target savings goal achieved.");
+    }
+
+    // --- AI MENTORSHIP ---
+
+    async function getMentorship() {
+        const mentorBox = document.getElementById('mentorship-advice');
+        mentorBox.innerText = "Mentor is reviewing your journey...";
+
+        if (!apiKey) {
+            setTimeout(() => {
+                const avgSavings = userHistory.length > 0 ? 
+                    (userHistory.reduce((sum, h) => sum + h.savings, 0) / userHistory.length).toFixed(2) : 0;
+                mentorBox.innerHTML = `
+                    <strong>Standard Guidance:</strong><br>
+                    • Historical Avg Savings: $${avgSavings}<br>
+                    • Focus on consistency. You have ${userHistory.length} entries recorded.<br>
+                    • Connect Gemini API for personalized strategic analysis.
+                `;
+            }, 1000);
+            return;
+        }
+
+        const historyContext = userHistory.map(h => `${h.date}: $${h.savings} saved`).join(' | ');
+        const goalContext = userProfile.goals.map(g => g.text).join(', ');
+        const prompt = `Act as a Senior Financial Mentor. User Profile: ${userProfile.name}, Target Savings: ${userProfile.targetRate}%. Goals: ${goalContext}. History: ${historyContext}. Provide a concise (3-4 bullet points) strategic mentorship review. Be encouraging but direct.`;
+
+        const response = await callGemini(prompt);
+        mentorBox.innerHTML = response.replace(/\n/g, '<br>');
+    }
+
+    function addAlert(msg) {
+        const alertList = document.getElementById('alerts-list');
+        const div = document.createElement('div');
+        div.className = 'alert-item';
+        div.innerHTML = `⚠️ ${msg}`;
+        alertList.appendChild(div);
+    }
+
+    // --- PLANNERS ---
+
+    function planGoal() {
+        const amount = parseFloat(document.getElementById('goal-amount').value) || 0;
+        const months = parseFloat(document.getElementById('goal-months').value) || 0;
+        const resultEl = document.getElementById('goal-result');
+        if (!resultEl) return;
+        if (amount <= 0 || months <= 0) return;
+        const monthly = amount / months;
+        resultEl.innerText = `Goal Plan: Save $${monthly.toLocaleString(undefined, {minimumFractionDigits: 2})} for ${months} months.`;
+    }
+
+    // --- GROWTH ADVISOR LOGIC ---
+
+    function updateAdvisor() {
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        const savings = income - expenses;
+        const risk = document.querySelector('input[name="risk"]:checked').value;
+        const advisorEl = document.getElementById('advisor-recommendation');
+        const tagsEl = document.getElementById('portfolio-tags');
+
+        if (income === 0) {
+            advisorEl.innerHTML = `<p style="color: var(--text-muted);">Awaiting cash flow data...</p>`;
+            return;
+        }
+
+        let advice = "";
+        let tags = [];
+
+        if (risk === "conservative") {
+            advice = `Focus on <strong>Capital Preservation</strong>. With a surplus of $${savings.toLocaleString()}, consider high-yield savings or treasury bonds to protect your core wealth.`;
+            tags = ["HYSA", "T-Bonds", "Gold"];
+        } else if (risk === "moderate") {
+            advice = `Build a <strong>Balanced Growth Portfolio</strong>. Your $${savings.toLocaleString()} expansion power should go 60% into Index Funds and 40% into Dividend Stocks for compounding.`;
+            tags = ["S&P 500", "Dividends", "Real Estate"];
+        } else {
+            advice = `Unlocking <strong>Aggressive Wealth Accumulation</strong>. Maximize your $${savings.toLocaleString()} by focusing on Tech Growth ETFs, Individual Equities, and Crypto (5%). Time is your greatest asset.`;
+            tags = ["Growth ETFs", "Big Tech", "Venture"];
+        }
+
+        advisorEl.innerHTML = `<p>${advice}</p>`;
+        tagsEl.innerHTML = tags.map(t => `<span style="background: var(--beige-dark); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">${t}</span>`).join('');
+    }
+
+    // --- FUTURE PLANNER & CHARTING ---
+
+    function setPlannerMode(mode) {
+        plannerMode = mode;
+        const btn401k = document.getElementById('mode-401k');
+        const btnFire = document.getElementById('mode-fire');
+        if (btn401k) btn401k.classList.toggle('active', mode === '401k');
+        if (btnFire) btnFire.classList.toggle('active', mode === 'fire');
+        
+        const fireGroup = document.getElementById('fire-target-group');
+        if (fireGroup) fireGroup.style.display = mode === 'fire' ? 'block' : 'none';
+        updateSim();
+    }
+
+    function initGrowthChart() {
+        const canvas = document.getElementById('growthChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (growthChart) growthChart.destroy();
+        
+        growthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Wealth Projection',
+                    data: [],
+                    borderColor: '#FF8A80',
+                    backgroundColor: 'rgba(255, 138, 128, 0.1)',
+                    fill: 'origin',
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#6D4C41' } },
+                    y: { grid: { color: 'rgba(0,0,0,0.05)' }, border: { display: false }, ticks: { color: '#6D4C41' } }
+                }
+            }
+        });
+    }
+
+    function updateSim() {
+        const simSavingsInput = document.getElementById('sim-savings');
+        const simContributionInput = document.getElementById('sim-contribution');
+        const simAgeInput = document.getElementById('sim-age');
+        const simMultiplierInput = document.getElementById('sim-multiplier');
+
+        if (!simSavingsInput || !simContributionInput || !simAgeInput) return;
+
+        const savings = parseFloat(simSavingsInput.value);
+        const contribution = parseFloat(simContributionInput.value);
+        const targetAge = parseInt(simAgeInput.value);
+        const multiplier = simMultiplierInput ? parseInt(simMultiplierInput.value) : 25;
+        
+        document.getElementById('val-savings').innerText = savings.toLocaleString();
+        document.getElementById('val-contribution').innerText = contribution.toLocaleString();
+        document.getElementById('val-age').innerText = targetAge;
+        if (document.getElementById('val-multiplier')) document.getElementById('val-multiplier').innerText = multiplier;
+
+        const currentAge = 30; // Base assumption
+        const yearsToRetire = targetAge - currentAge;
+        const annualReturn = 0.08; // 8% avg market return
+        
+        let labels = [];
+        let data = [];
+        let currentWealth = savings;
+
+        for (let i = 0; i <= (yearsToRetire > 0 ? yearsToRetire : 0); i++) {
+            labels.push(currentAge + i);
+            data.push(Math.round(currentWealth));
+            currentWealth = (currentWealth + (contribution * 12)) * (1 + annualReturn);
+        }
+
+        if (growthChart) {
+            growthChart.data.labels = labels;
+            growthChart.data.datasets[0].data = data;
+            growthChart.update();
+        }
+
+        const summaryEl = document.getElementById('retirement-summary');
+        if (!summaryEl) return;
+        const finalWealth = data[data.length - 1] || savings;
+
+        if (plannerMode === '401k') {
+            summaryEl.innerHTML = `Projected Nest Egg at ${targetAge}: <span style="color: var(--success);">$${finalWealth.toLocaleString()}</span>`;
+        } else {
+            const annualNeeds = (parseFloat(document.getElementById('expenses').value) || 3000) * 12;
+            const fireNum = annualNeeds * multiplier;
+            const fireGap = fireNum - finalWealth;
+            summaryEl.innerHTML = `FIRE Target (at ${targetAge}): $${fireNum.toLocaleString()} | ${fireGap > 0 ? `<span style="color: var(--danger);">-$${fireGap.toLocaleString()} gap</span>` : `<span style="color: var(--success);">Goal Met!</span>`}`;
+        }
+    }
+
+    // --- GEMINI AI INTEGRATION ---
+
+    async function getAIAdvice() {
+        const adviceBox = document.getElementById('ai-strategy-box');
+        if (!adviceBox) return;
+        const income = parseFloat(document.getElementById('income').value) || 0;
+        const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+        
+        adviceBox.innerText = "Analyzing with AI...";
+
+        if (!apiKey) {
+            // Simulated fallback
+            setTimeout(() => {
+                adviceBox.innerText = income > expenses ? 
+                "🚀 Strategy: Invest your surplus into a diversified index fund." : 
+                "🚨 Strategy: Eliminate 'phantom' expenses like unused subscriptions immediately.";
+            }, 800);
+            return;
+        }
+
+        const prompt = `User Data: Income $${income}, Expenses $${expenses}. History of last 3 entries: ${JSON.stringify(userHistory.slice(0,3))}. Provide a short, ultra-premium financial strategy advice (1-2 sentences).`;
+        
+        const response = await callGemini(prompt);
+        adviceBox.innerText = response;
+    }
+
+    async function callGemini(userPrompt) {
+        if (!apiKey) return "Please add a Gemini API Key in your profile to enable real AI.";
+        
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: userPrompt }] }]
+                })
+            });
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                return "API Error: Check your key or quota.";
+            }
+        } catch (error) {
+            console.error(error);
+            return "Unable to connect to Gemini. Check your network or API Key.";
+        }
+    }
+
+    // --- CHATBOT ---
+
+    function toggleChat() {
+        const box = document.getElementById('chat-box');
+        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        addChatMessage(text, 'user');
+        input.value = '';
+
+        if (!apiKey) {
+            // Simulation logic
+            setTimeout(() => {
+                let reply = "Ask about 'save', 'invest', or 'debt'. (Connect Gemini key for real AI conversations!)";
+                const lower = text.toLowerCase();
+                if (lower.includes('save')) reply = "Try the 24-hour rule: Wait a day before any non-essential purchase.";
+                if (lower.includes('invest')) reply = "Consistency is key. Consider automated recurring investments.";
+                addChatMessage(reply, 'bot');
+            }, 600);
+        } else {
+            const contextEntries = userHistory.slice(0,3).map(h => `Income:$${h.income}, Expenses:$${h.expenses}, Savings:$${h.savings}`).join(' | ');
+            const prompt = `You are a helpful, premium AI Money Mentor. Context: ${contextEntries}. User says: ${text}. Reply concisely and professionally.`;
+            const reply = await callGemini(prompt);
+            addChatMessage(reply, 'bot');
+        }
+    }
+
+    function addChatMessage(text, side) {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+        const div = document.createElement('div');
+        div.className = `message msg-${side}`;
+        div.innerText = text;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
